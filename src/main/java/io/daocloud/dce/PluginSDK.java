@@ -14,10 +14,16 @@ import java.net.URI;
 import java.util.HashMap;
 
 class PluginSDK {
+    private static final String DEFAULT_DOCKER_HOST = "unix://var/run/docker.sock";
+
     private final DockerClient client;
 
     PluginSDK(URI dockerHost) {
         this.client = new DockerClient(dockerHost);
+    }
+
+    PluginSDK() {
+        this(URI.create(DEFAULT_DOCKER_HOST));
     }
 
     String detectHostIP() {
