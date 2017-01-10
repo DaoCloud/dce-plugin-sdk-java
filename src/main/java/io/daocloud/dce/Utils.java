@@ -26,8 +26,8 @@ import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 
 
-public class Utils {
-    public static String getResponseContent(HttpResponse response) throws IOException {
+class Utils {
+    static String getResponseContent(HttpResponse response) throws IOException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
         StringBuilder result = new StringBuilder();
         String line;
@@ -37,7 +37,7 @@ public class Utils {
         return result.toString();
     }
 
-    public static HttpClient getHTTPClient(boolean ignoreSSLVerify) {
+    static HttpClient getHTTPClient(boolean ignoreSSLVerify) {
         HttpClientBuilder builder = HttpClientBuilder.create();
 
         if (ignoreSSLVerify) {
@@ -57,7 +57,7 @@ public class Utils {
         return builder.build();
     }
 
-    public static HttpClient getUnixSocketHTTPClient(URI socketUri) {
+    static HttpClient getUnixSocketHTTPClient(URI socketUri) {
         HttpClientBuilder builder = HttpClientBuilder.create();
 
         RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder
@@ -72,7 +72,7 @@ public class Utils {
         return builder.build();
     }
 
-    public static void setBasicAuth(HttpRequest request, URI requestURI) {
+    static void setBasicAuth(HttpRequest request, URI requestURI) {
         String userInfo = requestURI.getUserInfo();
         if (userInfo == null) {
             return;

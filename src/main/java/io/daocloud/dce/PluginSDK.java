@@ -46,7 +46,7 @@ class PluginSDK {
         return new int[]{swarmPort, controllerPort, controllerSSLPort};
     }
 
-    URI getPluginStorageURL(String URLTemplate) {
+    private URI getPluginStorageURL(String URLTemplate) {
         String hostIP = this.detectHostIP();
         int[] DCEPorts = this.detectDCEPorts();
 
@@ -60,7 +60,7 @@ class PluginSDK {
         return URI.create(storageURL.replace("{DCE_PORT}", Integer.toString(controllerSSLPort)));
     }
 
-    URI getPluginStorageURL() throws PluginSDKException {
+    private URI getPluginStorageURL() throws PluginSDKException {
         String URLTemplate = System.getenv("DCE_PLUGIN_STORAGE_URL");
         if (URLTemplate == null) {
             throw new PluginSDKException("environment `DCE_PLUGIN_STORAGE_URL` is missed");
