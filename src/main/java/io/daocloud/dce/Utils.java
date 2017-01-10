@@ -13,8 +13,15 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.ssl.TrustStrategy;
 
@@ -32,6 +39,7 @@ public class Utils {
 
     public static HttpClient getHTTPClient(boolean ignoreSSLVerify) {
         HttpClientBuilder builder = HttpClientBuilder.create();
+
         if (ignoreSSLVerify) {
             SSLContext insecureSSLContext;
             try {
@@ -46,6 +54,21 @@ public class Utils {
 
             builder = builder.setSSLContext(insecureSSLContext).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
         }
+        return builder.build();
+    }
+
+    public static HttpClient getUnixSocketHTTPClient(URI socketUri) {
+        HttpClientBuilder builder = HttpClientBuilder.create();
+
+        RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder
+                .<ConnectionSocketFactory>create()
+                .register("https", SSLConnectionSocketFactory.getSocketFactory())
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("unix", new UnixConnectionSocketFactory(socketUri));
+        Registry<ConnectionSocketFactory> registry = registryBuilder.build();
+        HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+        builder.setConnectionManager(ccm);
+
         return builder.build();
     }
 

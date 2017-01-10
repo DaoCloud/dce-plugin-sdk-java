@@ -8,7 +8,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 
-
 class DockerClient {
     private static final int DEFAULT_TIMEOUT_SECONDS = 60000;
 
@@ -16,14 +15,14 @@ class DockerClient {
     private final int timeout;
 
     private DockerClient(URI dockerHost, int timeout) {
-        if ("tcp".equals(dockerHost.getScheme()) || "unix".equals(dockerHost.getScheme())) {
-            if ("tcp".equals(dockerHost.getScheme())) {
-                String dockerHostStr = dockerHost.toString();
-                dockerHostStr = dockerHostStr.replace("tcp://", "http://");
-                dockerHost = URI.create(dockerHostStr);
-            }
+        this.timeout = timeout;
+        if ("tcp".equals(dockerHost.getScheme())) {
+            String dockerHostStr = dockerHost.toString();
+            dockerHostStr = dockerHostStr.replace("tcp://", "http://");
+            this.dockerHost = URI.create(dockerHostStr);
+        } else if ("unix".equals(dockerHost.getScheme())) {
             this.dockerHost = dockerHost;
-            this.timeout = timeout;
+
         } else {
             throw new DockerClientException("Unsupported protocol scheme found: '" + dockerHost
                     + "'. Only 'tcp://' or 'unix://' supported.");
@@ -34,7 +33,7 @@ class DockerClient {
         this(dockerHost, DEFAULT_TIMEOUT_SECONDS);
     }
 
-    private RequestConfig getReqConfig() {
+    private RequestConfig getRequestConfig() {
         return RequestConfig.custom()
                 .setConnectionRequestTimeout(this.timeout)
                 .setConnectTimeout(this.timeout)
@@ -42,10 +41,25 @@ class DockerClient {
                 .build();
     }
 
+    private String getSanitizedBaseURL() {
+        URI sanitizedURI = this.dockerHost;
+        if ("unix".equals(this.dockerHost.getScheme())) {
+            sanitizedURI = UnixConnectionSocketFactory.sanitizeUri(this.dockerHost);
+        }
+        return sanitizedURI.toString();
+    }
+
+    private HttpClient getClient() {
+        if ("unix".equals(this.dockerHost.getScheme())) {
+            return Utils.getUnixSocketHTTPClient(this.dockerHost);
+        }
+        return Utils.getHTTPClient(true);
+    }
+
     JSONObject Info() throws DockerClientException {
-        HttpClient client = Utils.getHTTPClient(true);
-        HttpGet req = new HttpGet(this.dockerHost + "/info");
-        RequestConfig reqConfig = this.getReqConfig();
+        HttpClient client = this.getClient();
+        HttpGet req = new HttpGet(this.getSanitizedBaseURL() + "/info");
+        RequestConfig reqConfig = this.getRequestConfig();
         req.setConfig(reqConfig);
 
         String result;
@@ -59,9 +73,9 @@ class DockerClient {
     }
 
     JSONObject ServiceInspect(String service_id) throws DockerClientException {
-        HttpClient client = Utils.getHTTPClient(true);
-        HttpGet req = new HttpGet(this.dockerHost + "/services/" + service_id);
-        RequestConfig reqConfig = this.getReqConfig();
+        HttpClient client = this.getClient();
+        HttpGet req = new HttpGet(this.getSanitizedBaseURL() + "/services/" + service_id);
+        RequestConfig reqConfig = this.getRequestConfig();
         req.setConfig(reqConfig);
 
         String result;

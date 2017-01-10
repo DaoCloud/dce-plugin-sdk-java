@@ -41,6 +41,16 @@ public class DockerClientTest
         }
     }
 
+    public void testInfoUnixSocket() throws Exception {
+        DockerClient c = new DockerClient(URI.create("unix:///var/run/docker.sock"));
+        try {
+            JSONObject info = c.Info();
+            assertTrue(info.length() > 0);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public void testServiceInspect() {
         DockerClient c = new DockerClient(URI.create("tcp://192.168.1.137:2370"));
         try {
