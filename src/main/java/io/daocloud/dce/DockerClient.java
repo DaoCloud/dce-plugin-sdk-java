@@ -72,9 +72,9 @@ class DockerClient {
         return new JSONObject(result);
     }
 
-    JSONObject ServiceInspect(String service_id) throws DockerClientException {
+    JSONObject ServiceInspect(String serviceId) throws DockerClientException {
         HttpClient client = this.getClient();
-        HttpGet req = new HttpGet(this.getSanitizedBaseURL() + "/services/" + service_id);
+        HttpGet req = new HttpGet(this.getSanitizedBaseURL() + "/services/" + serviceId);
         RequestConfig reqConfig = this.getRequestConfig();
         req.setConfig(reqConfig);
 
