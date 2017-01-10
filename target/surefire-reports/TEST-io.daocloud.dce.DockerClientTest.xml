@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="2" failures="0" name="io.daocloud.dce.DockerClientTest" time="0.911" errors="0" skipped="0">
+<testsuite tests="2" failures="0" name="io.daocloud.dce.DockerClientTest" time="1.141" errors="0" skipped="0">
   <properties>
     <property name="idea.version" value="2016.1.3"/>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
@@ -63,6 +63,6 @@
     <property name="sun.io.unicode.encoding" value="UnicodeBig"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase classname="io.daocloud.dce.DockerClientTest" name="testInfo" time="0.867"/>
-  <testcase classname="io.daocloud.dce.DockerClientTest" name="testServiceInspect" time="0.033"/>
+  <testcase classname="io.daocloud.dce.DockerClientTest" name="testInfo" time="1.111"/>
+  <testcase classname="io.daocloud.dce.DockerClientTest" name="testServiceInspect" time="0.016"/>
 </testsuite>

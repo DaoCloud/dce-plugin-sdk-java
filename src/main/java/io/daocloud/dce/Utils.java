@@ -1,17 +1,23 @@
 package io.daocloud.dce;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLContext;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
+
 
 public class Utils {
     public static String getResponseContent(HttpResponse response) throws IOException {
@@ -27,7 +33,18 @@ public class Utils {
     public static HttpClient getHTTPClient(boolean ignoreSSLVerify) {
         HttpClientBuilder builder = HttpClientBuilder.create();
         if (ignoreSSLVerify) {
-            builder = builder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            SSLContext insecureSSLContext;
+            try {
+                insecureSSLContext = SSLContexts.custom().loadTrustMaterial(new TrustStrategy() {
+                    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        return true;
+                    }
+                }).build();
+            } catch (GeneralSecurityException e) {
+                insecureSSLContext = null;
+            }
+
+            builder = builder.setSSLContext(insecureSSLContext).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
         }
         return builder.build();
     }
