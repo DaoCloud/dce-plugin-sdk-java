@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.HashMap;
 
 /**
  * Unit test for simple App.
@@ -41,5 +42,17 @@ public class PluginSDKTest
         PluginSDK sdk = new PluginSDK(URI.create("tcp://192.168.1.137:2370"));
         int[] ports = sdk.detectDCEPorts();
         assertTrue(ports[0] == 2375 && ports[1] == 80 && ports[2] == 443);
+    }
+
+    public void testDCEPluginConfigSetGet() {
+        PluginSDK sdk = new PluginSDK(URI.create("tcp://192.168.1.137:2370"));
+        HashMap<String, String> config = new HashMap<String, String>();
+        config.put("name", "Hello, World");
+        JSONObject jsonConfig = new JSONObject(config);
+
+        JSONObject setted = sdk.SetConfig(jsonConfig);
+        JSONObject getted = sdk.GetConfig();
+
+        assertTrue(setted.toString().equals(getted.toString()));
     }
 }

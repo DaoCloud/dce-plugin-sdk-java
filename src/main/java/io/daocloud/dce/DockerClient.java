@@ -1,7 +1,5 @@
 package io.daocloud.dce;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
 
 import org.json.JSONObject;
@@ -9,7 +7,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 
 class DockerClient {
@@ -45,63 +42,35 @@ class DockerClient {
                 .build();
     }
 
-    private HttpClient getClient() {
-        return HttpClientBuilder.create().build();
-    }
-
     JSONObject Info() throws DockerClientException {
-        HttpClient client = this.getClient();
+        HttpClient client = Utils.getHTTPClient(true);
         HttpGet req = new HttpGet(this.dockerHost + "/info");
         RequestConfig reqConfig = this.getReqConfig();
         req.setConfig(reqConfig);
 
-        BufferedReader rd;
+        String result;
         try {
             HttpResponse resp = client.execute(req);
-            rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+            result = Utils.getResponseContent(resp);
         } catch (Exception e) {
             throw new DockerClientException(e.toString(), e);
         }
-
-        StringBuffer result = new StringBuffer();
-        String line = "";
-
-        try {
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (Exception e) {
-            throw new DockerClientException(e.toString(), e);
-        }
-
-        return new JSONObject(result.toString());
+        return new JSONObject(result);
     }
 
     JSONObject ServiceInspect(String service_id) throws DockerClientException {
-        HttpClient client = this.getClient();
+        HttpClient client = Utils.getHTTPClient(true);
         HttpGet req = new HttpGet(this.dockerHost + "/services/" + service_id);
         RequestConfig reqConfig = this.getReqConfig();
         req.setConfig(reqConfig);
 
-        BufferedReader rd;
+        String result;
         try {
             HttpResponse resp = client.execute(req);
-            rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+            result = Utils.getResponseContent(resp);
         } catch (Exception e) {
             throw new DockerClientException(e.toString(), e);
         }
-
-        StringBuffer result = new StringBuffer();
-        String line = "";
-
-        try {
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (Exception e) {
-            throw new DockerClientException(e.toString(), e);
-        }
-
-        return new JSONObject(result.toString());
+        return new JSONObject(result);
     }
 }

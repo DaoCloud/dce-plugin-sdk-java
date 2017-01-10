@@ -6,12 +6,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -48,77 +45,71 @@ class PluginSDK {
         return new int[]{swarmPort, controllerPort, controllerSSLPort};
     }
 
-    URI pluginStorageURL() {
-        String storageURL = System.getenv("DCE_PLUGIN_STORAGE_URL");
+    URI getPluginStorageURL(String URLTemplate) {
         String hostIP = this.detectHostIP();
         int[] DCEPorts = this.detectDCEPorts();
 
         int controllerPort = DCEPorts[1];
         int controllerSSLPort = DCEPorts[2];
 
-        storageURL = storageURL.replace("{DCE_HOST}", hostIP);
+        String storageURL = URLTemplate.replace("{DCE_HOST}", hostIP);
         if (storageURL.startsWith("http://")) {
             return URI.create(storageURL.replace("{DCE_PORT}", Integer.toString(controllerPort)));
         }
         return URI.create(storageURL.replace("{DCE_PORT}", Integer.toString(controllerSSLPort)));
     }
 
-    JSONObject SetConfig(JSONObject config) {
-        String configStr = config.toString();
-        return this.SetConfig(configStr);
+    URI getPluginStorageURL() throws PluginSDKException {
+        String URLTemplate = System.getenv("DCE_PLUGIN_STORAGE_URL");
+        if (URLTemplate == null) {
+            throw new PluginSDKException("environment `DCE_PLUGIN_STORAGE_URL` is missed");
+        }
+        return this.getPluginStorageURL(URLTemplate);
     }
 
-    JSONObject SetConfig(String config) {
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpPut req = new HttpPut(this.pluginStorageURL());
+    JSONObject SetConfig(JSONObject config) throws PluginSDKException {
+        URI storageURL = this.getPluginStorageURL();
+        return this.SetConfig(config, storageURL);
+    }
+
+    JSONObject SetConfig(JSONObject config, URI storageURL) throws PluginSDKException {
+        String configStr = config.toString();
+        HttpClient client = Utils.getHTTPClient(true);
+        HttpPut req = new HttpPut(storageURL);
+        Utils.setBasicAuth(req, storageURL);
+
         req.addHeader("Content-Type", "application/json");
-        HttpEntity entity = new ByteArrayEntity(config.getBytes());
+        HttpEntity entity = new ByteArrayEntity(configStr.getBytes());
         req.setEntity(entity);
 
-        BufferedReader rd;
+        String result;
         try {
             HttpResponse resp = client.execute(req);
-            rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+            result = Utils.getResponseContent(resp);
         } catch (Exception e) {
             throw new PluginSDKException(e.toString(), e);
         }
-
-        StringBuffer result = new StringBuffer();
-        String line = "";
-        try {
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (Exception e) {
-            throw new DockerClientException(e.toString(), e);
-        }
-
-        return new JSONObject(result.toString());
+        return new JSONObject(result);
     }
 
-    JSONObject GetConfig() {
-        HttpClient client = HttpClientBuilder.create().build();
-        HttpGet req = new HttpGet(this.pluginStorageURL());
+    JSONObject GetConfig() throws PluginSDKException {
+        URI storageURL = this.getPluginStorageURL();
+        return this.GetConfig(storageURL);
+    }
+
+    JSONObject GetConfig(URI storageURL) throws PluginSDKException {
+        HttpClient client = Utils.getHTTPClient(true);
+        HttpGet req = new HttpGet(storageURL);
+        Utils.setBasicAuth(req, storageURL);
         req.addHeader("Content-Type", "application/json");
 
-        BufferedReader rd;
+        String result;
         try {
             HttpResponse resp = client.execute(req);
-            rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+            result = Utils.getResponseContent(resp);
         } catch (Exception e) {
             throw new PluginSDKException(e.toString(), e);
         }
-
-        StringBuffer result = new StringBuffer();
-        String line = "";
-        try {
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-        } catch (Exception e) {
-            throw new DockerClientException(e.toString(), e);
-        }
-
-        return new JSONObject(result.toString());
+        return new JSONObject(result);
     }
 }
