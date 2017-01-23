@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.util.HashMap;
 
-class PluginSDK {
+public class PluginSDK {
     private static final String DEFAULT_DOCKER_HOST = "unix://var/run/docker.sock";
 
     private final DockerClient client;
