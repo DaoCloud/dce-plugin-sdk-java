@@ -74,12 +74,12 @@ public class PluginSDK {
         return this.getPluginStorageURL(URLTemplate);
     }
 
-    JSONObject SetConfig(JSONObject config) throws PluginSDKException {
+    public JSONObject SetConfig(JSONObject config) throws PluginSDKException {
         URI storageURL = this.getPluginStorageURL();
         return this.SetConfig(config, storageURL);
     }
 
-    JSONObject SetConfig(JSONObject config, URI storageURL) throws PluginSDKException {
+    public JSONObject SetConfig(JSONObject config, URI storageURL) throws PluginSDKException {
         String configStr = config.toString();
         HttpClient client = Utils.getHTTPClient(true);
         HttpPut req = new HttpPut(storageURL);
@@ -99,12 +99,12 @@ public class PluginSDK {
         return new JSONObject(result);
     }
 
-    JSONObject GetConfig() throws PluginSDKException {
+    public JSONObject GetConfig() throws PluginSDKException {
         URI storageURL = this.getPluginStorageURL();
         return this.GetConfig(storageURL);
     }
 
-    JSONObject GetConfig(URI storageURL) throws PluginSDKException {
+    public JSONObject GetConfig(URI storageURL) throws PluginSDKException {
         HttpClient client = Utils.getHTTPClient(true);
         HttpGet req = new HttpGet(storageURL);
         Utils.setBasicAuth(req, storageURL);
