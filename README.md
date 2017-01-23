@@ -40,7 +40,24 @@ You can use this SDK to save your plugin's config.
 **config should not bigger than 1MB.**
 
 ```java
-#TBD
+package io.daocloud.test;
+
+import io.daocloud.dce.PluginSDK;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
+public class SDKTest {
+    public static void main(String[] args) {
+        PluginSDK sdk = new PluginSDK();
+        HashMap<String, String> config = new HashMap<String, String>();
+        config.put("name", "Hello, World");
+        JSONObject jsonConfig = new JSONObject(config);
+
+        JSONObject setted = sdk.SetConfig(jsonConfig);
+        JSONObject getted = sdk.GetConfig();
+    }
+}
 ```
 
 ## License
