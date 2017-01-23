@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>io.daocloud.dce</groupId>
+  <artifactId>dce-plugin-sdk</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20170123105556</lastUpdated>
+  </versioning>
+</metadata>
