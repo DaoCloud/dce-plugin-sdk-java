@@ -4,7 +4,7 @@
     <groupId>io.daocloud.dce</groupId>
     <artifactId>dce-plugin-sdk</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1</version>
     <name>dce-plugin-sdk</name>
     <url>https://github.com/DaoCloud/dce-plugin-sdk-java</url>
     <scm>
