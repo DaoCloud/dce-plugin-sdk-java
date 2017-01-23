@@ -22,7 +22,7 @@ public class PluginSDK {
         this.client = new DockerClient(dockerHost);
     }
 
-    PluginSDK() {
+    public PluginSDK() {
         this(URI.create(DEFAULT_DOCKER_HOST));
     }
 
