@@ -14,6 +14,17 @@ DCE plugin SDK for Java.
 Put this in your `pom.xml`:
 
 ```xml
+<repositories>
+    <repository>
+        <id>dce-plugin-sdk</id>
+        <url>https://raw.github.com/DaoCloud/dce-plugin-sdk-java/mvn-repo/</url>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+        </snapshots>
+    </repository>
+</repositories>
+
 <dependency>
   <groupId>io.daocloud.dce</groupId>
   <artifactId>dce-plugin-sdk</artifactId>
