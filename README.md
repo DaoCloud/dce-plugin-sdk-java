@@ -25,11 +25,13 @@ Put this in your `pom.xml`:
     </repository>
 </repositories>
 
-<dependency>
-  <groupId>io.daocloud.dce</groupId>
-  <artifactId>dce-plugin-sdk</artifactId>
-  <version>0.1</version>
-</dependency>
+<dependencies>
+    <dependency>
+      <groupId>io.daocloud.dce</groupId>
+      <artifactId>dce-plugin-sdk</artifactId>
+      <version>0.1</version>
+    </dependency>
+<dependencies>
 ```
 
 ## Example/Usage
